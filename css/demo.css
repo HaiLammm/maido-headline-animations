@@ -1,0 +1,684 @@
+/*
+ * Demo page chrome, plus a copy of the store's first view (photo, scrim and
+ * headline type) so each animation is seen at its real size. The first-view
+ * values mirror the theme's section-maido-month.css: sizes, colours and the
+ * two scrims at 750px and below / above.
+ */
+
+/*
+ * Bodoni Moda -- Copyright 2020 The Bodoni Moda Project Authors
+ * (https://github.com/indestructible-type/Bodoni). Latin subset, the same
+ * file the store theme ships.
+ *
+ * Maido Gyousho -- Yuji Syuku, Copyright 2021 The Yuji Project Authors
+ * (https://github.com/Kinutafontfactory/Yuji), cut down to the characters of
+ * this headline. Like the theme it covers only U+3000 and up, so the Latin
+ * "A5" inside the brush lines falls back to Mincho exactly as on the site.
+ *
+ * Both are licensed under the SIL Open Font License 1.1: fonts/licenses/.
+ */
+@font-face {
+  font-family: 'Bodoni Moda';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url('../fonts/bodoni-moda-latin-var.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308,
+    U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Maido Gyousho';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/maido-gyousho-subset.woff2') format('woff2');
+  unicode-range: U+3001-3002, U+3044, U+304B, U+305D, U+306B, U+306E, U+3076, U+3089, U+3092, U+4ECA,
+    U+5150, U+5168, U+548C, U+56FD, U+5CF6, U+65E8, U+6642, U+6708, U+6BDB, U+725B, U+7523, U+770C,
+    U+7B49, U+7D1A, U+9078, U+9E7F, U+9ED2;
+}
+
+:root {
+  --ink: #f4efe8;
+  --muted: #b9b2a8;
+  --ground: #0e0e0e;
+  --panel: #191919;
+  --line: #2e2e2e;
+  --gold: #e2bb88;
+  --red: #9a1515;
+  --red-dark: #7e1111;
+  --sans: system-ui, -apple-system, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', 'Yu Gothic', sans-serif;
+  --mincho: 'Times New Roman', YuMincho, 'Hiragino Mincho ProN', 'Yu Mincho', 'MS PMincho', 'Noto Serif JP', serif;
+  --display: 'Maido Gyousho', var(--mincho);
+  --latin: 'Bodoni Moda', Didot, 'Bodoni MT', 'Times New Roman', serif;
+  --panel-ink: #2c2a28;
+  --panel-muted: #645f58;
+  --panel-line: #d6d2ca;
+  --bar-h: 64px;
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding-bottom: calc(var(--bar-h) + 32px + env(safe-area-inset-bottom));
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.7;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+/* ------------------------------------------------------------------- intro */
+
+.intro {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 20px 12px;
+}
+
+.intro__eyebrow {
+  margin: 0;
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.intro__title {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------- first view (the stage) */
+
+.stage {
+  --photo-h: clamp(540px, 80vh, 700px);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  cursor: pointer;
+}
+
+.stage__photo {
+  position: relative;
+  height: var(--photo-h);
+  overflow: hidden;
+}
+
+.stage__photo picture,
+.stage__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.stage__photo img {
+  object-fit: cover;
+  object-position: center 45%;
+}
+
+.stage__photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #000000dd 0%, #00000099 36%, #00000000 66%),
+    linear-gradient(#00000099, #00000000 24%);
+}
+
+.stage__tag {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 2;
+  padding: 6px 8px;
+  background: #000000b3;
+  font-size: 11px;
+  line-height: 1.4;
+  border-radius: 3px;
+}
+
+/* Copy over the photo's lower edge, the 看板 panel bottom-right beside it. */
+.stage__grid {
+  position: absolute;
+  top: var(--photo-h);
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  width: min(calc(100% - 40px), 1200px);
+  margin-inline: auto;
+  transform: translateY(calc(-100% - 56px));
+}
+
+/* The marquee runs from the photo's left edge and fades out before the
+ * panel, so it bleeds on the left only. */
+.stage .fv-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: calc(100% - 440px);
+  --ta-bleed-start: max(20px, calc((100vw - 1200px) / 2));
+  --ta-bleed-end: 0px;
+}
+
+.stage .ta-marquee {
+  -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, #000 85%, transparent);
+}
+
+.lead-panel {
+  flex: 0 0 390px;
+  width: 390px;
+  padding: 22px 22px 20px;
+  background: #fff;
+  color: var(--panel-ink);
+  box-shadow: 0 18px 40px #00000066;
+  text-align: left;
+}
+
+.lead-panel__kicker {
+  margin: 0 0 4px;
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+}
+
+.lead-panel__name {
+  margin: 0 0 10px;
+  font-family: var(--mincho);
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+.lead-panel__prefix {
+  display: block;
+  color: var(--panel-muted);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.lead-panel__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50px;
+  padding: 12px 26px;
+  background: var(--red);
+  color: #fff;
+  font-family: var(--mincho);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+@media screen and (max-width: 990px) {
+  .stage .fv-copy {
+    max-width: calc(100% - 380px);
+  }
+
+  .lead-panel {
+    flex-basis: 340px;
+    width: 340px;
+  }
+}
+
+/* The headline type, as the store sets it with 「産地を大きく」 on. */
+.fv-copy {
+  color: #fff;
+  font-family: var(--mincho);
+  text-align: left;
+}
+
+.fv-label {
+  --ta-ink: var(--gold);
+  --ta-bar: var(--gold);
+  margin: 0 0 10px;
+  color: var(--gold);
+  font-family: var(--latin);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fv-heading {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(26px, 2.8vw, 36px);
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.fv-heading-pre {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.42em;
+  letter-spacing: 0.08em;
+}
+
+.fv-origin,
+.ta-marquee {
+  margin: 4px 0 16px;
+  font-family: var(--display);
+  font-size: clamp(36px, 4.6vw, 62px);
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+}
+
+.fv-origin-part {
+  display: inline-block;
+}
+
+.fv-tagline {
+  margin: 0 0 18px;
+  font-family: var(--display);
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.4;
+}
+
+.fv-cta {
+  margin: 0;
+}
+
+.fv-cta a {
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.8;
+  text-underline-offset: 5px;
+}
+
+.fv-cta a::after {
+  content: '\00a0\2193';
+}
+
+/* Until the brush face has loaded, so nothing animates in a fallback font. */
+.is-loading .fv-copy {
+  visibility: hidden;
+}
+
+@media screen and (max-width: 750px) {
+  /* Phone order, as on the site: photo with the copy over its foot, then
+   * the panel. The site shortens the photo so the panel's button stays in
+   * the first screen; here the photo keeps 4:5 so the copy has room. */
+  .stage {
+    --photo-h: 125vw;
+  }
+
+  @supports (height: 100svh) {
+    .stage {
+      --photo-h: clamp(400px, 125vw, calc(100svh - 160px));
+    }
+  }
+
+  .stage__photo::after {
+    background:
+      linear-gradient(#00000000 42%, #000000ee 100%),
+      linear-gradient(#000000aa, #00000000 18%);
+  }
+
+  .stage__grid {
+    position: static;
+    display: block;
+    width: 100%;
+    transform: none;
+  }
+
+  .stage .fv-copy {
+    position: absolute;
+    top: calc(var(--photo-h) - 14px);
+    left: 16px;
+    right: 16px;
+    z-index: 3;
+    max-width: none;
+    transform: translateY(-100%);
+    --ta-bleed-start: 16px;
+    --ta-bleed-end: 16px;
+  }
+
+  .stage .ta-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .lead-panel {
+    width: auto;
+    margin: -2px 0 0;
+    padding: 14px 16px 16px;
+    border-bottom: 1px solid var(--panel-line);
+    box-shadow: none;
+  }
+
+  .lead-panel__name {
+    margin-bottom: 4px;
+    font-size: 18px;
+  }
+
+  .fv-label {
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+
+  .fv-heading {
+    margin-bottom: 2px;
+    font-size: 22px;
+  }
+
+  .fv-heading-pre {
+    margin-bottom: 2px;
+    font-size: 13px;
+  }
+
+  .fv-origin,
+  .ta-marquee {
+    margin: 2px 0 10px;
+    font-size: 32px;
+    line-height: 1.3;
+  }
+
+  .fv-origin-part {
+    display: block;
+  }
+
+  .fv-tagline {
+    margin-bottom: 6px;
+    font-size: 17px;
+  }
+
+  .fv-cta a {
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 374px) {
+  .fv-origin,
+  .ta-marquee {
+    font-size: 28px;
+  }
+}
+
+/* -------------------------------------------------------------- the list */
+
+.list,
+.notes {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 36px 20px 8px;
+}
+
+.list__title,
+.notes__title {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.list__lead {
+  margin: 0 0 20px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.card:hover {
+  border-color: #4a4a4a;
+}
+
+.card[aria-current='true'] {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 1px var(--gold);
+}
+
+/* A miniature of the first view: same markup, smaller type. */
+.mini {
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+}
+
+.mini img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+}
+
+.mini::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(#00000000 20%, #000000e6 100%),
+    linear-gradient(90deg, #00000088, #00000000 70%);
+}
+
+.mini .fv-copy {
+  position: absolute;
+  z-index: 2;
+  left: 14px;
+  right: 14px;
+  bottom: 10px;
+  --ta-bleed: 14px;
+}
+
+.mini .fv-label {
+  margin-bottom: 0;
+  font-size: 10px;
+}
+
+.mini .fv-heading {
+  font-size: 15px;
+}
+
+.mini .fv-heading-pre {
+  margin-bottom: 0;
+  font-size: 10px;
+}
+
+.mini .fv-origin,
+.mini .ta-marquee {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.mini .fv-origin-part {
+  display: block;
+}
+
+.mini [data-after] {
+  display: none;
+}
+
+.card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px 14px;
+}
+
+.card__no {
+  margin: 0;
+  color: var(--gold);
+  font-family: var(--latin);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+
+.card__name {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card__desc {
+  flex: 1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.card__show {
+  align-self: flex-start;
+  min-height: 36px;
+  margin-top: 10px;
+  padding: 4px 16px;
+  background: transparent;
+  color: var(--gold);
+  font-size: 13px;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+}
+
+.card[aria-current='true'] .card__show {
+  background: var(--gold);
+  color: #111;
+}
+
+/* ------------------------------------------------------------- the notes */
+
+.notes {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.notes__title {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.notes ul {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+/* --------------------------------------------------------- the bottom bar */
+
+.bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(12px + env(safe-area-inset-bottom));
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: min(calc(100% - 24px), 560px);
+  height: var(--bar-h);
+  padding: 8px;
+  background: #161616ee;
+  border: 1px solid #ffffff1f;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px #00000080;
+  transform: translateX(-50%);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.bar__step {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  padding: 0 0 4px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 28px;
+  line-height: 1;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.bar__now {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  margin: 0;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.bar__no {
+  color: var(--gold);
+  font-family: var(--latin);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.bar__name {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.bar__replay {
+  flex: none;
+  height: 44px;
+  padding: 0 14px;
+  background: var(--red);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  border: 0;
+  border-radius: 10px;
+}
+
+.bar__replay:hover {
+  background: var(--red-dark);
+}

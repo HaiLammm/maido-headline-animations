@@ -1,0 +1,408 @@
+/*
+ * Headline entrance animations, all running left to right.
+ *
+ * Markup, as js/demo.js builds it from plain text:
+ *
+ *   <div data-anim="slide">                       the container picks the effect
+ *     <p data-line>                               one per line, in reading order
+ *       <span class="ta-line" style="--i:0">      line index
+ *         <span class="ta-sr">Monthly Wagyu</span>              read by screen readers
+ *         <span class="ta-chars" aria-hidden="true">
+ *           <span class="ta-char" style="--c:0">M</span> ...    running character index
+ *     <p data-after>                              fades in once the headline is set
+ *
+ * Changing data-anim (or clearing it and setting it again) replays the effect.
+ * Every rule here only animates *towards* the normal look, so with no
+ * data-anim the text simply stands as it does on the site today.
+ *
+ * On the store theme these rules belong inside
+ * `@media (prefers-reduced-motion: no-preference)`; the demo leaves them
+ * unconditional because showing the motion is its whole purpose.
+ */
+
+/* ---------------------------------------------------------------- structure */
+
+.ta-line {
+  display: inline-block;
+  position: relative;
+}
+
+.ta-char {
+  display: inline-block;
+  white-space: pre;
+}
+
+.ta-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+[data-anim] {
+  --ta-base: 0.25s;
+  --ta-line-gap: 0.14s;
+  --ta-char-gap: 0.045s;
+}
+
+/* When the tagline and link come in: after the last line or character. */
+[data-anim='slide'],
+[data-anim='wipe'],
+[data-anim='feather'],
+[data-anim='slash'],
+[data-anim='bar'],
+[data-anim='spread'] {
+  --ta-after: calc(var(--ta-base) + (var(--ta-lines, 5) - 1) * var(--ta-line-gap) + var(--ta-tail, 0.5s));
+}
+
+[data-anim='chars'],
+[data-anim='blur'],
+[data-anim='fly'],
+[data-anim='flip'],
+[data-anim='type'] {
+  --ta-after: calc(var(--ta-base) + var(--ta-count, 30) * var(--ta-char-gap) + var(--ta-tail, 0.3s));
+}
+
+[data-anim]:not([data-anim=''], [data-anim='none']) [data-after] {
+  animation: ta-fade-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--ta-after, 1.2s);
+}
+
+@keyframes ta-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ta-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ------------------------------------------------------------- 01 slide */
+
+[data-anim='slide'] .ta-line {
+  animation: ta-slide 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--i) * var(--ta-line-gap));
+}
+
+@keyframes ta-slide {
+  from { opacity: 0; transform: translateX(-48px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* -------------------------------------------------------------- 02 wipe */
+
+/* The negative insets leave room for glyphs that overhang their box. */
+[data-anim='wipe'] {
+  --ta-line-gap: 0.16s;
+  --ta-tail: 0.6s;
+}
+
+[data-anim='wipe'] .ta-line {
+  animation: ta-wipe 1s cubic-bezier(0.77, 0, 0.18, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--i) * var(--ta-line-gap));
+}
+
+@keyframes ta-wipe {
+  from { clip-path: inset(-25% 100% -25% -5%); }
+  to { clip-path: inset(-25% -5% -25% -5%); }
+}
+
+/* ----------------------------------------------------------- 03 feather */
+
+/* A mask 2.5 times the line's width: opaque on its left 40%, clear on its
+ * right 40%. Sliding it from right-aligned to left-aligned walks the soft
+ * edge across the line. The padding/margin pair widens the mask area so
+ * glyph overhang is not cut. */
+[data-anim='feather'] {
+  --ta-line-gap: 0.18s;
+  --ta-tail: 0.9s;
+}
+
+[data-anim='feather'] .ta-line {
+  margin: -0.15em -0.1em;
+  padding: 0.15em 0.1em;
+  -webkit-mask-image: linear-gradient(90deg, #000 0 40%, transparent 60% 100%);
+  mask-image: linear-gradient(90deg, #000 0 40%, transparent 60% 100%);
+  -webkit-mask-size: 250% 100%;
+  mask-size: 250% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: ta-feather 1.6s cubic-bezier(0.45, 0, 0.2, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--i) * var(--ta-line-gap));
+}
+
+@keyframes ta-feather {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+    filter: blur(3px);
+  }
+  to {
+    -webkit-mask-position: 0 0;
+    mask-position: 0 0;
+    filter: blur(0);
+  }
+}
+
+/* ------------------------------------------------------------- 04 slash */
+
+/* A four-point polygon whose right edge leans like 「/」 and sweeps across. */
+[data-anim='slash'] {
+  --ta-tail: 0.6s;
+}
+
+[data-anim='slash'] .ta-line {
+  animation: ta-slash 1.1s cubic-bezier(0.65, 0, 0.35, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--i) * var(--ta-line-gap));
+}
+
+@keyframes ta-slash {
+  from { clip-path: polygon(0 -25%, 0 -25%, -30% 125%, -30% 125%); }
+  to { clip-path: polygon(0 -25%, 130% -25%, 100% 125%, -30% 125%); }
+}
+
+/* --------------------------------------------------------------- 05 bar */
+
+/* The bar grows from the left, then retracts to the right; the text is
+ * switched on while the bar fully covers it. Colour: --ta-bar. */
+[data-anim='bar'] {
+  --ta-tail: 0.7s;
+}
+
+[data-anim='bar'] .ta-line::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 10%;
+  bottom: 6%;
+  left: -0.08em;
+  right: -0.08em;
+  background: var(--ta-bar, #9a1515);
+  transform: scaleX(0);
+  animation: ta-bar 1.1s cubic-bezier(0.77, 0, 0.18, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--i) * var(--ta-line-gap));
+}
+
+[data-anim='bar'] .ta-chars {
+  animation: ta-bar-text 1.1s linear both;
+  animation-delay: calc(var(--ta-base) + var(--i) * var(--ta-line-gap));
+}
+
+@keyframes ta-bar {
+  0% { transform: scaleX(0); transform-origin: left center; }
+  48% { transform: scaleX(1); transform-origin: left center; }
+  52% { transform: scaleX(1); transform-origin: right center; }
+  100% { transform: scaleX(0); transform-origin: right center; }
+}
+
+@keyframes ta-bar-text {
+  0%, 49% { opacity: 0; }
+  50%, 100% { opacity: 1; }
+}
+
+/* ------------------------------------------------------------- 06 chars */
+
+[data-anim='chars'] .ta-char {
+  animation: ta-chars 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--c) * var(--ta-char-gap));
+}
+
+@keyframes ta-chars {
+  from { opacity: 0; transform: translateX(-0.4em); }
+  to { opacity: 1; transform: none; }
+}
+
+/* -------------------------------------------------------------- 07 blur */
+
+[data-anim='blur'] {
+  --ta-char-gap: 0.055s;
+  --ta-tail: 0.4s;
+}
+
+[data-anim='blur'] .ta-char {
+  animation: ta-blur 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--c) * var(--ta-char-gap));
+}
+
+@keyframes ta-blur {
+  from { opacity: 0; filter: blur(12px); transform: translateX(-0.25em); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+
+/* --------------------------------------------------------------- 08 fly */
+
+[data-anim='fly'] {
+  --ta-char-gap: 0.04s;
+}
+
+[data-anim='fly'] .ta-char {
+  animation: ta-fly 0.9s ease-out both;
+  animation-delay: calc(var(--ta-base) + var(--c) * var(--ta-char-gap));
+}
+
+@keyframes ta-fly {
+  0% { opacity: 0; transform: translateX(-3em) skewX(24deg); }
+  55% { opacity: 1; }
+  72% { transform: translateX(0.08em) skewX(-6deg); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* -------------------------------------------------------------- 09 flip */
+
+[data-anim='flip'] {
+  --ta-char-gap: 0.05s;
+}
+
+[data-anim='flip'] .ta-char {
+  transform-origin: 0 50%;
+  animation: ta-flip 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--c) * var(--ta-char-gap));
+}
+
+@keyframes ta-flip {
+  from { opacity: 0; transform: perspective(400px) rotateY(-95deg); }
+  to { opacity: 1; transform: perspective(400px) rotateY(0); }
+}
+
+/* -------------------------------------------------------------- 10 type */
+
+/* Each character switches on at its turn and carries the caret (a thin box
+ * shadow on its right) until the next one does; the last one blinks it
+ * three times. Colour: --ta-caret. */
+[data-anim='type'] {
+  --ta-char-gap: 0.085s;
+  --ta-tail: 0.2s;
+}
+
+[data-anim='type'] .ta-char {
+  animation: ta-type 1ms linear both, ta-caret var(--ta-char-gap) linear;
+  animation-delay:
+    calc(var(--ta-base) + var(--c) * var(--ta-char-gap)),
+    calc(var(--ta-base) + var(--c) * var(--ta-char-gap));
+}
+
+[data-anim='type'] .ta-char--last {
+  animation: ta-type 1ms linear both, ta-blink 0.9s step-end 3;
+}
+
+@keyframes ta-type {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ta-caret {
+  from, to { box-shadow: 0.09em 0 0 0 var(--ta-caret, #e2bb88); }
+}
+
+@keyframes ta-blink {
+  0% { box-shadow: 0.09em 0 0 0 var(--ta-caret, #e2bb88); }
+  50%, 100% { box-shadow: none; }
+}
+
+/* ------------------------------------------------------------- 11 shine */
+
+/* The lines fade in, then each character glows gold at its turn, so a light
+ * seems to run along the text. --ta-ink is the colour it returns to. */
+[data-anim='shine'] {
+  --ta-after: calc(var(--ta-base) + 0.6s);
+}
+
+[data-anim='shine'] .ta-line {
+  animation: ta-fade 0.7s ease both;
+  animation-delay: calc(var(--ta-base) + var(--i) * 0.08s);
+}
+
+[data-anim='shine'] .ta-char {
+  animation: ta-shine 1.1s ease-out both;
+  animation-delay: calc(var(--ta-base) + 0.7s + var(--c) * 0.035s);
+}
+
+@keyframes ta-shine {
+  0% { color: var(--ta-ink, #fff); text-shadow: 0 0 0 transparent, 0 0 0 transparent; }
+  25% { color: #fff4dc; text-shadow: 0 0 0.3em #f3d7a8, 0 0 0.9em #e2bb8899; }
+  100% { color: var(--ta-ink, #fff); text-shadow: 0 0 0 transparent, 0 0 0 transparent; }
+}
+
+/* ------------------------------------------------------------ 12 spread */
+
+/* Starts with the characters piled at the left edge (negative tracking) and
+ * relaxes to the line's own letter-spacing: the `to` frame is left out on
+ * purpose, so it ends on whatever the line normally has. */
+[data-anim='spread'] {
+  --ta-tail: 0.6s;
+}
+
+[data-anim='spread'] .ta-line {
+  animation: ta-spread 1.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--ta-base) + var(--i) * var(--ta-line-gap));
+}
+
+@keyframes ta-spread {
+  from { opacity: 0; letter-spacing: -0.55em; filter: blur(3px); }
+}
+
+/* ----------------------------------------------------------- 13 marquee */
+
+/* The source line stays for screen readers; a duplicated band runs instead.
+ * The track holds two identical halves, so moving it from -50% to 0 loops
+ * without a seam. --ta-bleed (or --ta-bleed-start / --ta-bleed-end) widens
+ * the band to the edges of the photo. */
+.ta-marquee {
+  display: none;
+}
+
+[data-anim='marquee'] {
+  --ta-after: calc(var(--ta-base) + 0.4s);
+}
+
+[data-anim='marquee'] [data-marquee-source] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+[data-anim='marquee'] .ta-marquee {
+  display: block;
+  margin-left: calc(-1 * var(--ta-bleed-start, var(--ta-bleed, 0px)));
+  margin-right: calc(-1 * var(--ta-bleed-end, var(--ta-bleed, 0px)));
+  overflow: hidden;
+  animation: ta-fade 0.8s ease both;
+  animation-delay: var(--ta-base);
+}
+
+[data-anim='marquee'] .ta-line {
+  animation: ta-fade 0.8s ease both;
+  animation-delay: calc(var(--ta-base) + var(--i) * 0.1s);
+}
+
+.ta-marquee__track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  white-space: nowrap;
+}
+
+[data-anim='marquee'] .ta-marquee__track {
+  animation: ta-marquee var(--ta-marquee-dur, 20s) linear infinite;
+}
+
+.ta-marquee__sep {
+  display: inline-block;
+  margin-inline: 0.7em;
+  color: var(--ta-sep, #e2bb88);
+  font-size: 0.35em;
+}
+
+@keyframes ta-marquee {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}

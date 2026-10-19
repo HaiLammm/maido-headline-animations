@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <title>見出しアニメーション見本</title>
+  <meta name="description" content="トップページ ファーストビュー見出しのアニメーション候補（13種）">
+  <link rel="preload" href="fonts/maido-gyousho-subset.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/demo.css">
+  <link rel="stylesheet" href="css/text-animations.css">
+</head>
+<body>
+  <header class="intro">
+    <p class="intro__eyebrow">毎度おおきに商店 様</p>
+    <h1 class="intro__title">ファーストビュー見出し　アニメーション見本</h1>
+  </header>
+
+  <main>
+    <section class="stage" id="stage" aria-label="見本の表示">
+      <div class="stage__photo">
+        <picture>
+          <source
+            media="(min-width: 751px)"
+            srcset="https://maido-ookini-shouten.com/cdn/shop/files/maido-month-2026-10-landscape.jpg?width=1100 1100w,
+                    https://maido-ookini-shouten.com/cdn/shop/files/maido-month-2026-10-landscape.jpg?width=1500 1500w,
+                    https://maido-ookini-shouten.com/cdn/shop/files/maido-month-2026-10-landscape.jpg?width=2200 2200w"
+            sizes="100vw">
+          <img
+            src="https://maido-ookini-shouten.com/cdn/shop/files/maido-month-2026-10-portrait.jpg?width=750"
+            srcset="https://maido-ookini-shouten.com/cdn/shop/files/maido-month-2026-10-portrait.jpg?width=550 550w,
+                    https://maido-ookini-shouten.com/cdn/shop/files/maido-month-2026-10-portrait.jpg?width=750 750w,
+                    https://maido-ookini-shouten.com/cdn/shop/files/maido-month-2026-10-portrait.jpg?width=1100 1100w"
+            sizes="100vw"
+            alt="" width="750" height="938" fetchpriority="high">
+        </picture>
+      </div>
+      <span class="stage__tag">写真はイメージ</span>
+      <div class="stage__grid">
+        <div class="fv-copy" data-copy></div>
+        <div class="lead-panel">
+          <p class="lead-panel__kicker">二大看板商品</p>
+          <p class="lead-panel__name">
+            <span class="lead-panel__prefix">鹿児島県産A5等級黒毛和牛</span>
+            クラシタすき焼き・6種盛り
+          </p>
+          <span class="lead-panel__button">商品を見る</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="list" aria-labelledby="list-title">
+      <h2 class="list__title" id="list-title">一覧（全13種＋現在）</h2>
+      <p class="list__lead">
+        どれも文字が左から右へ現れる動きです。カードをタップすると、上の大きな画面で再生します。
+        お気に入りの番号（例：No.03）をお知らせください。
+      </p>
+      <ol class="cards" id="cards"></ol>
+    </section>
+
+    <section class="notes" aria-labelledby="notes-title">
+      <h2 class="notes__title" id="notes-title">補足</h2>
+      <ul>
+        <li>写真と文言は、現在のトップページのものをそのまま使っています。</li>
+        <li>速さ・色・文字が現れる順番は、どの見本も調整できます。</li>
+        <li>実際のサイトでは、端末の「視差効果を減らす」設定がオンの方には動きを止め、文字をそのまま表示します。</li>
+        <li>読み上げソフトには、分割前の文章がそのまま読み上げられます。</li>
+      </ul>
+    </section>
+  </main>
+
+  <nav class="bar" aria-label="見本の切り替え">
+    <button class="bar__step" type="button" data-step="-1" aria-label="前の見本">‹</button>
+    <p class="bar__now" aria-live="polite">
+      <span class="bar__no" id="bar-no">No.01</span>
+      <span class="bar__name" id="bar-name">スライドイン</span>
+    </p>
+    <button class="bar__step" type="button" data-step="1" aria-label="次の見本">›</button>
+    <button class="bar__replay" type="button" id="replay">もう一度</button>
+  </nav>
+
+  <template id="copy-template">
+    <p class="fv-label" data-line>Monthly Wagyu</p>
+    <h2 class="fv-heading"><small class="fv-heading-pre" data-line>今月の</small><span class="fv-heading-rest" data-line>和牛</span></h2>
+    <p class="fv-origin" data-marquee-source><span class="fv-origin-part" data-line>鹿児島県産</span><span class="fv-origin-part" data-line>A5等級黒毛和牛</span></p>
+    <div class="ta-marquee" aria-hidden="true"><div class="ta-marquee__track" data-marquee="鹿児島県産A5等級黒毛和牛"></div></div>
+    <p class="fv-tagline" data-after>全国から、その時に旨い牛を選ぶ。</p>
+    <p class="fv-cta" data-after><a href="#cards">今月の商品を見る</a></p>
+  </template>
+
+  <script src="js/demo.js" defer></script>
+</body>
+</html>
